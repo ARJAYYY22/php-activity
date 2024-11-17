@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <title>Enhanced Login Page</title>
+    <title>Login Page</title>
     <style>
         body {
             background: linear-gradient(135deg, #f3f4f6, #e9ecef);
@@ -17,6 +17,9 @@
         .card {
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
         }
         .form-control {
             border-radius: 8px;
@@ -35,77 +38,84 @@
             margin-top: 15px;
             border-radius: 8px;
         }
+        #profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="card p-4" style="max-width: 400px; width: 100%;">
-        <div class="text-center mb-4">
-            <img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" class="rounded-circle" alt="Profile Image" width="100">
-        </div>
 
-        <?php
-        $users = [
-            ["User Type" => "Admin", "Username" => "admin", "Password" => password_hash("Pass1234", PASSWORD_DEFAULT)],
-            ["User Type" => "Admin", "Username" => "mark", "Password" => password_hash("Pogi1234", PASSWORD_DEFAULT)],
-            ["User Type" => "Content Manager", "Username" => "pepito", "Password" => password_hash("manaloto", PASSWORD_DEFAULT)],
-            ["User Type" => "Content Manager", "Username" => "juan", "Password" => password_hash("delacruz", PASSWORD_DEFAULT)],
-            ["User Type" => "System User", "Username" => "pedro", "Password" => password_hash("penduko", PASSWORD_DEFAULT)]
-        ];
+<div class="card">
+    <div class="text-center mb-4">
+        <!-- Profile Picture -->
+        <img id="profile-img" src="images/profile.jpg" class="img-fluid rounded-circle" alt="Profile Image" />
+    </div>
 
-        $message = "";
-        $alertClass = "alert-info";
+    <?php
+    // Define an array of users
+    $users = [
+        ["User Type" => "Admin", "Username" => "admin", "Password" => password_hash("Pass1234", PASSWORD_DEFAULT)],
+        ["User Type" => "Admin", "Username" => "mark", "Password" => password_hash("Pogi1234", PASSWORD_DEFAULT)],
+        ["User Type" => "Content Manager", "Username" => "pepito", "Password" => password_hash("manaloto", PASSWORD_DEFAULT)],
+        ["User Type" => "Content Manager", "Username" => "juan", "Password" => password_hash("delacruz", PASSWORD_DEFAULT)],
+        ["User Type" => "System User", "Username" => "pedro", "Password" => password_hash("penduko", PASSWORD_DEFAULT)]
+    ];
 
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $selectedAccount = $_POST["Accounts"];
-            $enteredUsername = $_POST["username"];
-            $enteredPassword = $_POST["password"];
+    $message = "";
+    $alertClass = "alert-info";
 
-            $isValid = false;
-            foreach ($users as $user) {
-                if (
-                    $user["User Type"] === $selectedAccount &&
-                    $user["Username"] === $enteredUsername &&
-                    password_verify($enteredPassword, $user["Password"])
-                ) {
-                    $isValid = true;
-                    $message = "Welcome to the system, " . htmlspecialchars($user["Username"]) . "!";
-                    break;
-                }
-            }
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        $selectedAccount = $_POST["Accounts"];
+        $enteredUsername = $_POST["username"];
+        $enteredPassword = $_POST["password"];
 
-            if (!$isValid) {
-                $message = "Incorrect username or password.";
-                $alertClass = "alert-danger";
+        $isValid = false;
+        foreach ($users as $user) {
+            if (
+                $user["User Type"] === $selectedAccount &&
+                $user["Username"] === $enteredUsername &&
+                password_verify($enteredPassword, $user["Password"])
+            ) {
+                $isValid = true;
+                $message = "Welcome to the system, " . htmlspecialchars($user["Username"]) . "!";
+                break;
             }
         }
-        ?>
 
-        <?php if ($message): ?>
-            <div class="alert <?php echo $alertClass; ?> text-center"><?php echo $message; ?></div>
-        <?php endif; ?>
+        if (!$isValid) {
+            $message = "Incorrect username or password.";
+            $alertClass = "alert-danger";
+        }
+    }
+    ?>
 
-        <form method="post">
-            <div class="mb-3">
-                <select name="Accounts" class="form-select" id="Accounts" required>
-                    <option value="">Select Account Type</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Content Manager">Content Manager</option>
-                    <option value="System User">System User</option>
-                </select>
-            </div>
+    <?php if ($message): ?>
+        <div class="alert <?php echo $alertClass; ?> text-center"><?php echo $message; ?></div>
+    <?php endif; ?>
 
-            <div class="mb-3">
-                <input type="text" name="username" class="form-control" placeholder="Username" required autofocus>
-            </div>
+    <!-- Login Form -->
+    <form method="post">
+        <div class="mb-3">
+            <select name="Accounts" class="form-select" id="Accounts" required>
+                <option value="">Select Account Type</option>
+                <option value="Admin">Admin</option>
+                <option value="Content Manager">Content Manager</option>
+                <option value="System User">System User</option>
+            </select>
+        </div>
 
-            <div class="mb-3">
-                <input type="password" name="password" class="form-control" placeholder="Password" required>
-            </div>
+        <div class="mb-3">
+            <input type="text" name="username" class="form-control" placeholder="Username" required autofocus>
+        </div>
 
-            <button class="btn btn-lg btn-signin w-100" type="submit">Sign in</button>
-        </form>
-    </div>
+        <div class="mb-3">
+            <input type="password" name="password" class="form-control" placeholder="Password" required>
+        </div>
+
+        <button class="btn btn-lg btn-signin w-100" type="submit">Sign in</button>
+    </form>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
