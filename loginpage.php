@@ -1,3 +1,42 @@
+<?php
+// Define an array of users with hashed passwords
+$users = [
+    ["User Type" => "Admin", "Username" => "admin", "Password" => password_hash("Pass1234", PASSWORD_DEFAULT)],
+    ["User Type" => "Admin", "Username" => "Arjay", "Password" => password_hash("Pogi1234", PASSWORD_DEFAULT)],
+    ["User Type" => "Content Manager", "Username" => "tamad", "Password" => password_hash("manaloto", PASSWORD_DEFAULT)],
+    ["User Type" => "Content Manager", "Username" => "juan", "Password" => password_hash("direction", PASSWORD_DEFAULT)],
+    ["User Type" => "System User", "Username" => "pedro", "Password" => password_hash("penduko", PASSWORD_DEFAULT)]
+];
+
+$message = "";
+$alertClass = "alert-info";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $selectedAccount = $_POST["Accounts"];
+    $enteredUsername = $_POST["username"];
+    $enteredPassword = $_POST["password"];
+
+    $isValid = false;
+    foreach ($users as $user) {
+        // Check if the username and selected account match, and verify the password
+        if (
+            $user["User Type"] === $selectedAccount &&
+            $user["Username"] === $enteredUsername &&
+            password_verify($enteredPassword, $user["Password"]) // Check password hash
+        ) {
+            $isValid = true;
+            $message = "Welcome to the system, " . htmlspecialchars($user["Username"]) . "!";
+            break;
+        }
+    }
+
+    if (!$isValid) {
+        $message = "Incorrect username or password.";
+        $alertClass = "alert-danger";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,44 +91,6 @@
         <!-- Profile Picture -->
         <img id="profile-img" src="images/profile.jpg" class="img-fluid rounded-circle" alt="Profile Image" />
     </div>
-
-    <?php
-    // Define an array of users
-    $users = [
-        ["User Type" => "Admin", "Username" => "admin", "Password" => password_hash("Pass1234", PASSWORD_DEFAULT)],
-        ["User Type" => "Admin", "Username" => "mark", "Password" => password_hash("Pogi1234", PASSWORD_DEFAULT)],
-        ["User Type" => "Content Manager", "Username" => "pepito", "Password" => password_hash("manaloto", PASSWORD_DEFAULT)],
-        ["User Type" => "Content Manager", "Username" => "juan", "Password" => password_hash("delacruz", PASSWORD_DEFAULT)],
-        ["User Type" => "System User", "Username" => "pedro", "Password" => password_hash("penduko", PASSWORD_DEFAULT)]
-    ];
-
-    $message = "";
-    $alertClass = "alert-info";
-
-    if ($_SERVER["REQUEST_METHOD"] === "POST") {
-        $selectedAccount = $_POST["Accounts"];
-        $enteredUsername = $_POST["username"];
-        $enteredPassword = $_POST["password"];
-
-        $isValid = false;
-        foreach ($users as $user) {
-            if (
-                $user["User Type"] === $selectedAccount &&
-                $user["Username"] === $enteredUsername &&
-                password_verify($enteredPassword, $user["Password"])
-            ) {
-                $isValid = true;
-                $message = "Welcome to the system, " . htmlspecialchars($user["Username"]) . "!";
-                break;
-            }
-        }
-
-        if (!$isValid) {
-            $message = "Incorrect username or password.";
-            $alertClass = "alert-danger";
-        }
-    }
-    ?>
 
     <?php if ($message): ?>
         <div class="alert <?php echo $alertClass; ?> text-center"><?php echo $message; ?></div>
