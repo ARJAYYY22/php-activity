@@ -73,43 +73,59 @@
             margin-top: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: border 0.3s ease;
         }
+
+        .color-slider {
+            display: flex;
+            justify-content: space-between;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>FaceApp</h1>
-    <form method="post" action="">
+    <form method="post" action="" id="imageForm">
         <label for="txtRange">Select Photo Size:</label>
         <input type="range" name="txtRange" id="txtRange" min="50" max="300" value="150" step="10">
 
         <label for="clrTheme">Select Border Color:</label>
-        <input type="color" name="clrTheme" id="clrTheme">
+        <input type="color" name="clrTheme" id="clrTheme" value="#000000">
 
-        <button type="submit" name="send">Process</button>
+        <button type="button" id="processButton">Process</button>
     </form>
 
-    <?php
-    // Correct image path if the image is inside a folder called 'images'
-    $image = "images/profile.jpg";  // Path to the image
-    $width = 150;  // Default width
-    $borderColor = '#000000';  // Default border color
-
-    if (isset($_POST["send"])) {
-        $width = $_POST["txtRange"];
-        $borderColor = $_POST["clrTheme"];
-    }
-
-    // Ensure the image exists and output the updated image with the selected size and border color
-    if (file_exists($image)) {
-        echo "<img src='$image' alt='Profile Photo' class='photo' style='width:{$width}px; height:auto; border: 3px solid $borderColor;'>";
-    } else {
-        echo "<p style='color: red;'>Image not found. Please ensure the image path is correct.</p>";
-    }
-    ?>
+    <!-- Default Image (loaded from the server or static file) -->
+    <img id="profileImage" src="images/profile.jpg" alt="Profile Photo" class="photo" style="width: 150px; height: auto; border: 3px solid #000000;">
 
 </div>
+
+<script>
+    // Get references to the input elements
+    const rangeInput = document.getElementById('txtRange');
+    const colorInput = document.getElementById('clrTheme');
+    const image = document.getElementById('profileImage');
+
+    // Set the default border color from the color picker initially
+    image.style.borderColor = colorInput.value;
+
+    // Function to update the image size and border color
+    function updateImage() {
+        const width = rangeInput.value; // Get the current width from the slider
+        const borderColor = colorInput.value; // Get the selected border color
+
+        // Update the image styles in real time
+        image.style.width = `${width}px`;
+        image.style.height = 'auto'; // Keep the aspect ratio intact
+        image.style.border = `3px solid ${borderColor}`;
+    }
+
+    // Event listeners to update the image when inputs change
+    rangeInput.addEventListener('input', updateImage);
+    colorInput.addEventListener('input', updateImage);
+</script>
 
 </body>
 </html>
